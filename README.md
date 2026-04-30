@@ -22,5 +22,4 @@ Load projections:
 Generate dashboards:
 - python3 -m streamlit run dashboards/hitters_dashboard.py
 - python3 -m streamlit run dashboards/pitchers_dashboard.py
-- python3 -m streamlit run dashboards/trade_dashboard.py
-- python3 -m streamlit run dashboards/playground_dashboard.py
+- python3 -m streamlit run dashboards/player_comp_dashboard.py

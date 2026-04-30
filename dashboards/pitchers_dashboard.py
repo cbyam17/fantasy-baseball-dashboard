@@ -62,16 +62,8 @@ def load_pitcher_zscores_lfl():
 st.title("Pitchers ROS Z-SCORE Dashboard")
 positions = ["All", "SP", "RP"]
 st.set_page_config(layout="wide")
-df_pitcher_zscores = load_pitcher_zscores()
 df_pitcher_zscores_wmm = load_pitcher_zscores_wmm()
 df_pitcher_zscores_lfl = load_pitcher_zscores_lfl()
-
-# All pitchers Table
-st.subheader("All pitchers")
-position_filter = st.selectbox("Select Position", positions)
-if position_filter != "All":
-    df_pitcher_zscores = df_pitcher_zscores[df_pitcher_zscores["POS"].str.contains(position_filter, na=False)]
-st.dataframe(df_pitcher_zscores, width='stretch')
 
 # WMM pitchers Table
 st.subheader("Walter Matthau Memorial Pitchers")
@@ -86,6 +78,3 @@ position_filter_lfl = st.selectbox("Select Position LFL", positions)
 if position_filter_lfl != "All":
     df_pitcher_zscores_lfl = df_pitcher_zscores_lfl[df_pitcher_zscores_lfl["POS"].str.contains(position_filter_lfl, na=False)]
 st.dataframe(df_pitcher_zscores_lfl, width='stretch')
-
-#Example chart
-#st.bar_chart(df_pitcher_zscores[["NAME", "ZSCORE_HR"]].set_index("NAME").head(20))

@@ -43,24 +43,58 @@ df_pitcher_zscores = load_pitcher_zscores()
 
 # Hitters section
 st.subheader("Hitters")
-player_filter = st.multiselect(
+
+# Define filters
+player_filter_hitter = st.multiselect(
     "Search and select hitters:",
     options=sorted(df_hitter_zscores["NAME"].dropna().unique()),
 )
-if player_filter:
-    df_filtered = df_hitter_zscores[df_hitter_zscores["NAME"].isin(player_filter)]
+score_columns = st.multiselect(
+    "Select hitter columns for custom score",
+    options=[col for col in df_hitter_zscores.columns if col.startswith("ZSCORE_")],
+    default=[]
+)
+
+# Filter hitters based on selection
+if player_filter_hitter:
+    df_hitter_filtered = df_hitter_zscores[df_hitter_zscores["NAME"].isin(player_filter_hitter)]
 else:
-    df_filtered = df_hitter_zscores
-st.dataframe(df_filtered, width='stretch')
+    df_hitter_filtered = df_hitter_zscores
+
+# Calculate custom score if columns are selected
+if score_columns:
+    df_hitter_filtered["ZSCORE_CUSTOM"] = df_hitter_filtered[score_columns].sum(axis=1).round(1)
+if "ZSCORE_CUSTOM" in df_hitter_filtered.columns:
+    df_hitter_filtered = df_hitter_filtered.sort_values("ZSCORE_CUSTOM", ascending=False)
+
+# generate hitter table
+st.dataframe(df_hitter_filtered, width='stretch')
 
 # Pitchers section
 st.subheader("Pitchers")
-player_filter = st.multiselect(
+
+# Define filters
+player_filter_pitcher = st.multiselect(
     "Search and select pitchers:",
     options=sorted(df_pitcher_zscores["NAME"].dropna().unique()),
 )
-if player_filter:
-    df_filtered = df_pitcher_zscores[df_pitcher_zscores["NAME"].isin(player_filter)]
+score_columns = st.multiselect(
+    "Select pitcher columns for custom score",
+    options=[col for col in df_pitcher_zscores.columns if col.startswith("ZSCORE_")],
+    default=[]
+)
+
+# Filter pitchers based on selection
+if player_filter_pitcher:
+    df_pitcher_filtered = df_pitcher_zscores[df_pitcher_zscores["NAME"].isin(player_filter_pitcher)]
 else:
-    df_filtered = df_pitcher_zscores
-st.dataframe(df_filtered, width='stretch')
+    df_pitcher_filtered = df_pitcher_zscores
+
+# Calculate custom score if columns are selected
+if score_columns:
+    df_pitcher_filtered["ZSCORE_CUSTOM"] = df_pitcher_filtered[score_columns].sum(axis=1).round(1)
+if "ZSCORE_CUSTOM" in df_pitcher_filtered.columns:
+    df_pitcher_filtered = df_pitcher_filtered.sort_values("ZSCORE_CUSTOM", ascending=False)
+
+# generate pitcher table
+st.dataframe(df_pitcher_filtered, width='stretch')

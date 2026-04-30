@@ -62,16 +62,8 @@ def load_hitter_zscores_lfl():
 st.title("Hitters ROS Z-SCORE Dashboard")
 positions = ["All", "DH", "1B", "2B", "3B", "OF", "SS"]
 st.set_page_config(layout="wide")
-df_hitter_zscores = load_hitter_zscores()
 df_hitter_zscores_wmm = load_hitter_zscores_wmm()
 df_hitter_zscores_lfl = load_hitter_zscores_lfl()
-
-# All Hitters Table
-st.subheader("All Hitters")
-position_filter = st.selectbox("Select Position", positions)
-if position_filter != "All":
-    df_hitter_zscores = df_hitter_zscores[df_hitter_zscores["POS"].str.contains(position_filter, na=False)]
-st.dataframe(df_hitter_zscores, width='stretch')
 
 # WMM Hitters Table
 st.subheader("Walter Matthau Memorial Hitters")
@@ -86,6 +78,3 @@ position_filter_lfl = st.selectbox("Select Position LFL", positions)
 if position_filter_lfl != "All":
     df_hitter_zscores_lfl = df_hitter_zscores_lfl[df_hitter_zscores_lfl["POS"].str.contains(position_filter_lfl, na=False)]
 st.dataframe(df_hitter_zscores_lfl, width='stretch')
-
-#Example chart
-#st.bar_chart(df_hitter_zscores[["NAME", "ZSCORE_HR"]].set_index("NAME").head(20))
