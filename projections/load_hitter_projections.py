@@ -66,6 +66,12 @@ df = df.where(pd.notnull(df), None)
 conn = get_connection()
 cursor = conn.cursor()
 
+# Truncate table before inserting
+print("Truncating table hitter_projections...")
+cursor.execute("TRUNCATE TABLE hitter_projections")
+conn.commit()
+print("Table truncated.")
+
 # Build dynamic insert query
 columns = ", ".join([f"`{col}`" for col in df.columns])
 placeholders = ", ".join(["%s"] * len(df.columns))
