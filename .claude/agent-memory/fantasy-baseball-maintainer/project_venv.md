@@ -1,30 +1,38 @@
 ---
 name: project-venv
-description: Python environment setup for the project; the README-described streamlit-env doesn't exist
+description: Python environment setup — projections/.venv is fully built with all deps including Playwright Chromium binaries
 metadata:
   type: project
 ---
 
-## Python environment — key facts
+## Python environment — current state (as of 2026-05-12)
 
-The README says to create `streamlit-env` in the project root, but that venv does not exist.
-The only venv present is `projections/.venv` (Python 3.14), which has `pandas`, `requests`,
-`beautifulsoup4`, and `playwright` (v1.59.0) but NOT `python-dotenv` or `mysql-connector-python`.
+`projections/.venv` is the sole venv for automation scripts. It was created fresh on 2026-05-12
+on the Ubuntu homelab server at `/srv/docker-data/python/app`.
 
-The intended environment (from README + CLAUDE.md) is:
-```
-python3 -m venv streamlit-env
-source streamlit-env/bin/activate
-pip install python-dotenv mysql-connector-python pandas streamlit
-```
+**What's installed in projections/.venv (Python 3.12.3):**
+- python-dotenv
+- mysql-connector-python
+- pandas
+- requests
+- beautifulsoup4
+- playwright (v1.59.0) — with Playwright-managed Chromium binaries downloaded via `playwright install chromium`
+- yahoo-oauth
+- yfinance
 
-`python-dotenv` is not installed system-wide or in the projections venv.
-Scripts that use `from dotenv import load_dotenv` must be run inside a venv that has it installed.
+**Playwright Chromium binaries** are installed at `/home/cbyam/.cache/ms-playwright/chromium-1217`
+(Chrome for Testing 147.0.7727.15). The scripts use Playwright's own bundled Chromium, not system Chrome.
+System Chrome is NOT installed on this server.
 
-**Playwright note:** The projections venv has playwright installed but its *bundled browsers* are NOT
-installed (playwright install was not run). However, system Chrome at `/usr/bin/google-chrome` works
-as a substitute by passing `executable_path='/usr/bin/google-chrome'` to `playwright.chromium.launch()`.
+**streamlit-env** does not exist; the Streamlit dashboard venv has not been created on this server.
+The README describes how to create it if needed.
 
-**Why:** Encountered when verifying sync_rosters.py dependencies and building fetch_projections.py.
-**How to apply:** When a user says a script fails on import, first ask if they're in the right venv.
-For Playwright specifically, always pass the system Chrome executable_path.
+**.env file** is present at `/srv/docker-data/python/app/.env` with all 9 required keys:
+DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, YAHOO_CLIENT_ID, YAHOO_CLIENT_SECRET,
+YAHOO_WMM_LEAGUE_NAME, YAHOO_LFL_LEAGUE_NAME. Properly gitignored.
+
+**load_projections.py** has been verified to run end-to-end: reads both CSVs and loads to MySQL.
+
+**Why:** Full environment setup was done on 2026-05-12 following README step 3 exactly.
+**How to apply:** All three automation scripts should be invoked with
+`/srv/docker-data/python/app/projections/.venv/bin/python3`. For cron, use that full path.
