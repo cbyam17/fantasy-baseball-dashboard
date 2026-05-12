@@ -43,3 +43,17 @@ Load projections:
 
 Run the app:
 - python3 -m streamlit run app.py
+
+Automate daily roster sync and projection load (cron):
+
+First, ensure the log files exist and are writable by the cron user:
+- sudo touch /var/log/sync_rosters.log /var/log/load_projections.log
+- sudo chown $USER /var/log/sync_rosters.log /var/log/load_projections.log
+
+Then add the following entries via `crontab -e`:
+
+0 0 * * * cd /home/cbyam/projects/fantasy-baseball-dashboard && /home/cbyam/projects/fantasy-baseball-dashboard/projections/.venv/bin/python3 players/sync_rosters.py >> /var/log/sync_rosters.log 2>&1
+0 1 * * * cd /home/cbyam/projects/fantasy-baseball-dashboard && /home/cbyam/projects/fantasy-baseball-dashboard/projections/.venv/bin/python3 projections/load_projections.py >> /var/log/load_projections.log 2>&1
+
+sync_rosters.py runs at midnight; load_projections.py runs one hour later.
+Note: the Yahoo OAuth token must already be authorized before cron runs (see sync rosters section above).
