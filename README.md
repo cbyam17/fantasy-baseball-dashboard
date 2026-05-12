@@ -38,9 +38,8 @@ On the first run you will be prompted to authorize access:
 3. Tokens are saved to .yahoo_token.json (gitignored) and reused automatically on all future runs
 
 Load projections:
-- place csv files in projections directory (hitter-projections.csv and pitcher-projections.csv)
-- python3 projections/load_hitter_projections.py
-- python3 projections/load_pitcher_projections.py
+- place csv files in projections directory (hitter_projections.csv and pitcher_projections.csv)
+- python3 projections/load_projections.py
 
 Run the app:
 - python3 -m streamlit run app.py
