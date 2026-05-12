@@ -37,8 +37,20 @@ On the first run you will be prompted to authorize access:
 2. Yahoo displays a verification code — paste it back into the terminal
 3. Tokens are saved to .yahoo_token.json (gitignored) and reused automatically on all future runs
 
-Load projections:
-- place csv files in projections directory (hitter_projections.csv and pitcher_projections.csv)
+Fetch projections from Razzball:
+- python3 projections/fetch_projections.py --dry-run   # preview row/column counts without writing files
+- python3 projections/fetch_projections.py             # scrape and write both CSVs
+- python3 projections/fetch_projections.py --hitters-only
+- python3 projections/fetch_projections.py --pitchers-only
+
+Requires Google Chrome (or Chromium) installed on the system:
+- sudo apt install -y google-chrome-stable   # or: sudo apt install -y chromium-browser
+
+Also requires playwright in the venv:
+- pip install playwright
+- playwright install chromium
+
+Load projections into MySQL:
 - python3 projections/load_projections.py
 
 Run the app:
@@ -47,13 +59,14 @@ Run the app:
 Automate daily roster sync and projection load (cron):
 
 First, ensure the log files exist and are writable by the cron user:
-- sudo touch /var/log/sync_rosters.log /var/log/load_projections.log
-- sudo chown $USER /var/log/sync_rosters.log /var/log/load_projections.log
+- sudo touch /var/log/sync_rosters.log /var/log/fetch_projections.log /var/log/load_projections.log
+- sudo chown $USER /var/log/sync_rosters.log /var/log/fetch_projections.log /var/log/load_projections.log
 
 Then add the following entries via `crontab -e`:
 
 0 0 * * * cd /home/cbyam/projects/fantasy-baseball-dashboard && /home/cbyam/projects/fantasy-baseball-dashboard/projections/.venv/bin/python3 players/sync_rosters.py >> /var/log/sync_rosters.log 2>&1
-0 1 * * * cd /home/cbyam/projects/fantasy-baseball-dashboard && /home/cbyam/projects/fantasy-baseball-dashboard/projections/.venv/bin/python3 projections/load_projections.py >> /var/log/load_projections.log 2>&1
+0 1 * * * cd /home/cbyam/projects/fantasy-baseball-dashboard && /home/cbyam/projects/fantasy-baseball-dashboard/projections/.venv/bin/python3 projections/fetch_projections.py >> /var/log/fetch_projections.log 2>&1
+0 2 * * * cd /home/cbyam/projects/fantasy-baseball-dashboard && /home/cbyam/projects/fantasy-baseball-dashboard/projections/.venv/bin/python3 projections/load_projections.py >> /var/log/load_projections.log 2>&1
 
-sync_rosters.py runs at midnight; load_projections.py runs one hour later.
+Execution order: sync_rosters.py (midnight) → fetch_projections.py (1 AM) → load_projections.py (2 AM).
 Note: the Yahoo OAuth token must already be authorized before cron runs (see sync rosters section above).
