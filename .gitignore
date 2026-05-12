@@ -3,3 +3,4 @@
 .DS_Store
 .venv/
 .yahoo_token.json
+.claude/settings.local.json
